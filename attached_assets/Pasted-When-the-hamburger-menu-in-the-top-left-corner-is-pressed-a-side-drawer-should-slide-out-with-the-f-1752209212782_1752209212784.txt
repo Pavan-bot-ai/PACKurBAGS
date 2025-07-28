@@ -1,0 +1,37 @@
+When the hamburger menu in the top left corner is pressed, a side drawer should slide out with the following options: Booked Plans, Transactions, Saved Places, Trip History, Profile, and Settings.
+
+When any of these buttons is tapped, it should navigate to a dedicated page showing the relevant information for that category. Each page must have a clean layout with only essential details relevant to that section, and a back button to return to the previous screen."
+---
+>Inside each menu page, display only the necessary and concise details as follows:
+
+Booked Plans: Show trip name, destination, travel dates, mode of transport, accommodation name, ticket download buttons,cancel plan option(when pressed ,should display the details that plan has been cancelled by the "user name" at "date" on" time " as a seperate slide),and booking status(whether pending or done ).all the above details should be fetched from database,make sure it fetches correctly according to the keyword used above and fill the details with neccesary info fetched.
+
+Transactions:In the mobile app, when the user taps the 'Transactions' option from the hamburger menu, navigate to a dedicated 'Transactions Page'. This page should display a vertical list of plan boxes, one for each transaction.
+Each plan box should show:A catchy trip name,The Trip ID / Reference ID
+A touch gesture: when the user taps a box, navigate to a new page specific to that trip.
+On tapping a plan box
+,Navigate to a 'Transaction Detail Page'.
+Fetch and display payment details dynamically based on the selected Trip ID from the database.
+The payment details page must show:
+Reference ID
+Payment Method
+Amount Paid
+Amount Received
+Date
+Status.
+Use a consistent layout for all boxes and detail pages, but ensure content is dynamically filled per selected plan. All navigation should be smooth, and back navigation should be available from the details page.
+
+Saved Places: When the 'Saved Places' button in the menu is tapped, navigate to a new page that fetches the list of saved places (favorites) from the database. These are places where the user tapped the heart icon.
+Check if any favorite places exist in the database for the current user:
+If saved places exist, display them as a list of cards showing the image, destination name, location, and rating (just like the 'Places & Reviews' cards).
+If no favorites are found, display a clean message: 'You haven’t saved any places yet. Start exploring and tap the heart to add favorites".
+
+Trip History: When the user taps the 'Trip History' button ,navigate to a page displaying a list of all previously completed (traveled) trips. Fetch this data dynamically from the database by checking for all plans where the travel end date has passed and the status is marked as 'completed'. Ensure that once a trip's end date is reached and it's not canceled, it should automatically be moved from 'Booked Plans' to 'Trip History' in the database. Each trip entry should display the destination, trip name (if any), travel dates, and a short status like 'Completed'. If no completed trips are found, display the following friendly message: "You haven’t completed any trips yet. Once you travel, your trips will appear here!" Make sure the data is specific to the currently logged-in user, and all navigation and updates happen smoothly and securely.
+
+Profile: Show profile picture, name, contact info, and travel preferences fetched from database which was given by the user earlier during login.
+
+Settings: When the 'Settings' button is tapped from the menu, navigate to a dedicated settings page that includes the following features: a Theme Toggle switch that allows the user to switch between dark mode and light mode; when the toggle is pressed, the app theme should instantly update across all screens. A Language Selection option should also be available, allowing the user to choose their preferred operating language from a list or dropdown—once selected, the app's UI text should update accordingly without requiring a restart. Lastly, include a Notifications toggle (On/Off); this should control whether the app sends alerts or reminders, and its current state should reflect the user’s previously saved preference. All changes should be applied instantly within the app and saved for the logged-in user.
+
+All pages should load when the corresponding button is clicked from the side menu. Navigation must be smooth and intuitive. Avoid unnecessary actions like “Add to calendar” or “Share”. Ensure back navigation is available on all pages.
+
+If database is not included intially ,make sure the pages display with details empty.do not add database untill user says

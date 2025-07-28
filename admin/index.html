@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack Your Bags - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .stat-card { transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); }
+        
+        /* Mobile responsive improvements */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+            }
+            
+            .stat-card {
+                padding: 1rem !important;
+            }
+            
+            .text-3xl {
+                font-size: 1.5rem !important;
+            }
+            
+            .container {
+                padding: 1rem !important;
+            }
+            
+            .flex {
+                flex-direction: column !important;
+                gap: 1rem;
+            }
+            
+            .space-x-4 > * + * {
+                margin-left: 0 !important;
+            }
+        }
+        
+        /* Chart containers responsive */
+        @media (max-width: 640px) {
+            [style*="height: 180px"], [style*="height: 200px"] {
+                height: 140px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-shield-alt text-2xl"></i>
+                    <h1 class="text-2xl font-bold">Pack Your Bags Admin</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="adminName" class="text-sm opacity-90">Administrator</span>
+                    <button onclick="logout()" class="bg-white bg-opacity-20 px-4 py-2 rounded-lg hover:bg-opacity-30 transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 w-96 card-shadow">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Admin Login</h2>
+            <form onsubmit="login(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" id="loginEmail" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500" placeholder="admin@packyourbags.com">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="loginPassword" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500" placeholder="Enter password">
+                </div>
+                <button type="submit" class="w-full gradient-bg text-white py-2 rounded-lg hover:opacity-90 transition">
+                    <i class="fas fa-lock mr-2"></i>Login
+                </button>
+            </form>
+            <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                <h3 class="font-semibold text-blue-800 mb-2">Demo Credentials:</h3>
+                <p class="text-sm text-blue-700">Email: admin@packyourbags.com</p>
+                <p class="text-sm text-blue-700">Password: admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden">
+        <!-- Navigation Tabs -->
+        <div class="container mx-auto px-6 py-6">
+            <div class="flex space-x-4 mb-8 border-b">
+                <button onclick="showTab('overview')" class="tab-btn px-6 py-3 font-semibold border-b-2 border-blue-500 text-blue-600">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Overview
+                </button>
+                <button onclick="showTab('users')" class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-blue-600 transition">
+                    <i class="fas fa-users mr-2"></i>Users & Guides
+                </button>
+                <button onclick="showTab('bookings')" class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-blue-600 transition">
+                    <i class="fas fa-calendar-check mr-2"></i>Bookings
+                </button>
+                <button onclick="showTab('revenue')" class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-blue-600 transition">
+                    <i class="fas fa-chart-line mr-2"></i>Revenue
+                </button>
+                <button onclick="showTab('database')" class="tab-btn px-6 py-3 font-semibold text-gray-600 hover:text-blue-600 transition">
+                    <i class="fas fa-database mr-2"></i>Database
+                </button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content">
+                <!-- Key Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card bg-white p-6 rounded-lg card-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Total Users</p>
+                                <p id="totalUsers" class="text-3xl font-bold text-blue-600">0</p>
+                            </div>
+                            <i class="fas fa-users text-blue-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white p-6 rounded-lg card-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Active Guides</p>
+                                <p id="totalGuides" class="text-3xl font-bold text-green-600">0</p>
+                            </div>
+                            <i class="fas fa-map-marked-alt text-green-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white p-6 rounded-lg card-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Total Bookings</p>
+                                <p id="totalBookings" class="text-3xl font-bold text-purple-600">0</p>
+                            </div>
+                            <i class="fas fa-calendar-check text-purple-500 text-2xl"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card bg-white p-6 rounded-lg card-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Total Revenue</p>
+                                <p id="totalRevenue" class="text-3xl font-bold text-orange-600">$0</p>
+                            </div>
+                            <i class="fas fa-dollar-sign text-orange-500 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white p-4 rounded-lg card-shadow">
+                        <h3 class="text-lg font-semibold mb-3">User Growth</h3>
+                        <div style="height: 180px; position: relative;">
+                            <canvas id="userGrowthChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg card-shadow">
+                        <h3 class="text-lg font-semibold mb-3">Revenue Trends</h3>
+                        <div style="height: 180px; position: relative;">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-lg card-shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+                    <div id="recentActivity" class="space-y-3">
+                        <!-- Activity items will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="users" class="tab-content hidden">
+                <div class="bg-white rounded-lg card-shadow">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold">User Management</h3>
+                            <div class="flex space-x-2">
+                                <button onclick="filterUsers('all')" class="filter-btn px-4 py-2 bg-blue-500 text-white rounded-lg text-sm">All</button>
+                                <button onclick="filterUsers('user')" class="filter-btn px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm">Users</button>
+                                <button onclick="filterUsers('guide')" class="filter-btn px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm">Guides</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b">
+                                        <th class="text-left py-3">Name</th>
+                                        <th class="text-left py-3">Email</th>
+                                        <th class="text-left py-3">Role</th>
+                                        <th class="text-left py-3">Join Date</th>
+                                        <th class="text-left py-3">Status</th>
+                                        <th class="text-left py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Users will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookings Tab -->
+            <div id="bookings" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white p-4 rounded-lg card-shadow text-center">
+                        <h4 class="font-semibold text-gray-600">Pending Bookings</h4>
+                        <p id="pendingBookings" class="text-2xl font-bold text-yellow-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg card-shadow text-center">
+                        <h4 class="font-semibold text-gray-600">Confirmed Bookings</h4>
+                        <p id="confirmedBookings" class="text-2xl font-bold text-green-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg card-shadow text-center">
+                        <h4 class="font-semibold text-gray-600">Completed Bookings</h4>
+                        <p id="completedBookings" class="text-2xl font-bold text-blue-600">0</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg card-shadow">
+                    <div class="p-6 border-b">
+                        <h3 class="text-lg font-semibold">All Bookings</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b">
+                                        <th class="text-left py-3">Booking ID</th>
+                                        <th class="text-left py-3">User</th>
+                                        <th class="text-left py-3">Guide</th>
+                                        <th class="text-left py-3">Destination</th>
+                                        <th class="text-left py-3">Date</th>
+                                        <th class="text-left py-3">Status</th>
+                                        <th class="text-left py-3">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingsTableBody">
+                                    <!-- Bookings will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Tab -->
+            <div id="revenue" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white p-4 rounded-lg card-shadow">
+                        <h3 class="text-lg font-semibold mb-3">Revenue by Service</h3>
+                        <div style="height: 200px; position: relative;">
+                            <canvas id="revenueByServiceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg card-shadow">
+                        <h3 class="text-lg font-semibold mb-3">Monthly Revenue</h3>
+                        <div style="height: 200px; position: relative;">
+                            <canvas id="monthlyRevenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg card-shadow">
+                    <div class="p-6 border-b">
+                        <h3 class="text-lg font-semibold">Revenue Breakdown</h3>
+                    </div>
+                    <div class="p-6">
+                        <div id="revenueBreakdown" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Revenue breakdown will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Tab -->
+            <div id="database" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg card-shadow">
+                        <div class="p-6 border-b">
+                            <h3 class="text-lg font-semibold">Database Tables</h3>
+                        </div>
+                        <div class="p-6">
+                            <div id="databaseTables" class="space-y-2">
+                                <!-- Database tables will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg card-shadow">
+                        <div class="p-6 border-b">
+                            <h3 class="text-lg font-semibold">SQL Query Runner</h3>
+                        </div>
+                        <div class="p-6">
+                            <textarea id="sqlQuery" class="w-full h-32 p-3 border rounded-lg font-mono text-sm" placeholder="Enter SQL query..."></textarea>
+                            <button onclick="executeSqlQuery()" class="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                                <i class="fas fa-play mr-2"></i>Execute Query
+                            </button>
+                            <div id="queryResults" class="mt-4 p-3 bg-gray-50 rounded-lg hidden">
+                                <h4 class="font-semibold mb-2">Results:</h4>
+                                <pre id="queryOutput" class="text-sm overflow-auto"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-8 w-96 card-shadow max-h-screen overflow-y-auto">
+            <h2 id="userModalTitle" class="text-2xl font-bold mb-6 text-center text-gray-800">Add New User</h2>
+            <form id="userForm" onsubmit="saveUser(event)">
+                <input type="hidden" id="userId" value="">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                    <input type="text" id="userUsername" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" id="userEmail" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Role</label>
+                    <select id="userRole" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                        <option value="user">User</option>
+                        <option value="guide">Guide</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Status</label>
+                    <select id="userStatus" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div id="passwordField" class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="userPassword" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    <small class="text-gray-500">Leave blank to keep current password (for editing)</small>
+                </div>
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition">
+                        <i class="fas fa-save mr-2"></i>Save
+                    </button>
+                    <button type="button" onclick="hideUserModal()" class="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Suspend User Modal -->
+    <div id="suspendModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-8 w-96 card-shadow">
+            <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Suspend User</h2>
+            <form id="suspendForm" onsubmit="suspendUser(event)">
+                <input type="hidden" id="suspendUserId" value="">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Reason for Suspension</label>
+                    <textarea id="suspendReason" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500" rows="3" placeholder="Enter reason for suspension..."></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Suspension Start Date</label>
+                    <input type="date" id="suspendFromDate" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Suspension End Date</label>
+                    <input type="date" id="suspendToDate" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition">
+                        <i class="fas fa-ban mr-2"></i>Suspend
+                    </button>
+                    <button type="button" onclick="hideSuspendModal()" class="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/admin/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+
+{
+  "name": "Pack Your Bags - AI Travel Companion",
+  "short_name": "Pack Your Bags",
+  "description": "AI-powered trip planning and travel companion app",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0EA5E9",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%230EA5E9'/><path d='M30 45 L45 35 L60 45 L55 60 L35 60 Z' fill='white'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='40' fill='%230EA5E9'/><path d='M30 45 L45 35 L60 45 L55 60 L35 60 Z' fill='white'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["travel", "lifestyle", "productivity"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 800'><rect width='400' height='800' fill='%23f0f9ff'/><text x='200' y='400' text-anchor='middle' font-size='24' fill='%230EA5E9'>Pack Your Bags</text></svg>",
+      "sizes": "400x800",
+      "type": "image/svg+xml"
+    }
+  ]
+}
